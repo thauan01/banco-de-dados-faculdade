@@ -1,10 +1,12 @@
-import express, { Express } from "express";
-import { Description, ExpressInitializer, SwaggerEndpoint, SwaggerInitializer, Title, Version } from "express-swagger-autoconfigure";
+import { Express } from "express";
+import { BearerTokenJWT, Description, ExpressInitializer, SwaggerEndpoint, SwaggerInitializer, Title, Version } from "express-swagger-autoconfigure";
+import { AuthController } from "./controller/AuthController";
 import { FaculdadeController } from "./controller/FaculdadeController";
 
 @SwaggerInitializer
 @SwaggerEndpoint("/doc")
-@Description("API de Faculdade")
+@BearerTokenJWT(true)
+@Description("API de Faculdade com autenticação")
 @Version("1.0.0")
 @Title("API Faculdade")
 export default class App {
@@ -17,9 +19,10 @@ export default class App {
 
     private initControllers() {
         new FaculdadeController();
+        new AuthController();
     }
 
-    public getApp() {
+    public getApp(): Express {
         return this.app;
     }
 }

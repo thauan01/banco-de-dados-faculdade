@@ -2,6 +2,8 @@ import { Body, Controller, Get, Post, Put, StatusResponse } from "express-swagge
 import { Request, Response } from "express";
 import { AppDataSource } from "../database";
 import { Turma } from "../entities/Turma";
+import { TurmaDto } from "../dto/Turma.dto";
+import { authMiddleware } from "../middlewares/auth.middleware";
 
 const repoTurma = AppDataSource.getRepository(Turma);
 
@@ -10,12 +12,9 @@ export class FaculdadeController {
 
     @StatusResponse(200, "Turma criada com sucesso")
     @StatusResponse(400, "Erro ao criar turma")
-    @Body({
-        nome: "Nome da turma",
-        semestre: "Semestre da turma (ex: 2025.1)",
-        id_disciplina: "ID da disciplina"
-    })
-    @Post("/turma")
+    @StatusResponse(401, "Não autenticado")
+    @Body(TurmaDto)
+    @Post("/turma", authMiddleware)
     async criarTurma(request: Request, response: Response): Promise<Response> {
         const { nome, semestre, id_disciplina } = request.body;
         const turma = repoTurma.create({nome, semestre, id_disciplina});
@@ -34,13 +33,14 @@ export class FaculdadeController {
 
     @StatusResponse(200, "Turma atualizada com sucesso")
     @StatusResponse(400, "Erro ao atualizar turma")
+    @StatusResponse(401, "Não autenticado")
     @Body({
         id: "ID da turma",
         nome: "Nome da turma",
         semestre: "Semestre da turma (ex: 2025.2)",
         id_disciplina: "ID da disciplina"
     })
-    @Put("/turma")
+    @Put("/turma", authMiddleware)
     async updateturma(request: Request, response: Response): Promise<Response> {
         const { id, nome, semestre, id_disciplina } = request.body;
         const sql = "UPDATE turma SET nome = $1, semestre = $2, id_disciplina = $3 WHERE id = $4 RETURNING *";
