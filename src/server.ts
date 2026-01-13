@@ -1,15 +1,12 @@
-import express from "express";
-import faculdadeRoutes from "./routes/FaculdadeRoutes";
+import App from "./App";
 import { AppDataSource } from "./database";
 
-const app = express();
-app.use(express.json());
-app.use("/faculdade", faculdadeRoutes);
+const app = new App();
 
 AppDataSource.initialize()
     .then(() => {
         console.log("Conexão com o banco de dados estabelecida");
-        app.listen(3000, () => {
+        app.getApp().listen(3000, () => {
             console.log("Servidor rodando com sucesso na porta 3000");
         });
     })
